@@ -1,102 +1,171 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Search, Filter, MessageCircle } from 'lucide-react';
+import { db } from '../lib/firebase';
+import { collection, onSnapshot, query, orderBy } from 'firebase/firestore';
+import { Star, ArrowRight, Loader2, Shield, Sparkles, RefreshCw } from 'lucide-react';
+
+interface MattressProduct {
+  id?: string;
+  name: string;
+  price: number;
+  tagline: string;
+  image: string;
+  description: string;
+}
 
 export default function Mattresses() {
-  const [filter, setFilter] = useState('All');
+  const [dbProducts, setDbProducts] = useState<MattressProduct[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const products = [
-    { id: 1, name: "The Cloud Memory", price: "₹18,999", type: "Memory Foam", img: "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&q=80&w=800" },
-    { id: 2, name: "Royale Ortho Care", price: "₹24,500", type: "Orthopedic", img: "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&q=80&w=800" },
-    { id: 3, name: "Luxury Spring Hybrid", price: "₹32,000", type: "Hybrid Spring", img: "https://images.unsplash.com/photo-1631679706909-1844bbd07221?auto=format&fit=crop&q=80&w=800" },
-    { id: 4, name: "Latex Organic Bliss", price: "₹45,000", type: "Latex", img: "https://images.unsplash.com/photo-1522771731478-44fbcd4d1bf4?auto=format&fit=crop&q=80&w=800" },
-    { id: 5, name: "Classic Coir Firm", price: "₹12,500", type: "Coir", img: "https://images.unsplash.com/photo-1536882240095-0379873feb4e?auto=format&fit=crop&q=80&w=800" },
-    { id: 6, name: "Dual Comfort Reversible", price: "₹15,000", type: "Dual Comfort", img: "https://images.unsplash.com/photo-1615529328331-f8917597711f?auto=format&fit=crop&q=80&w=800" },
+  // Fallback initial products to display if your Firestore database collection is empty[cite: 1]
+  const fallbackProducts: MattressProduct[] = [
+    {
+      name: "The Cloud Memory",
+      price: 12999,
+      tagline: "Ultra plush temperature regulating luxurious foam layers.",
+      image: "https://images.unsplash.com/photo-1631049307264-da0ec9d70304?auto=format&fit=crop&q=80&w=600",
+      description: "Infused with responsive zero-gravity memory configurations designed to contour organically around stress centers while minimizing motion transfer."
+    },
+    {
+      name: "Royale Ortho Care",
+      price: 15499,
+      tagline: "Chiropractor endorsed 5-zone spinal alignment support matrix.",
+      image: "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&q=80&w=600",
+      description: "Engineered specifically for persistent back discomfort using high-density rebonded support systems that counter pressure dynamically."
+    },
+    {
+      name: "Luxury Spring Hybrid",
+      price: 18999,
+      tagline: "Individually pocketed steel springs with pocket-mesh breathable profiles.",
+      image: "https://images.unsplash.com/photo-1540518614846-7eded433c457?auto=format&fit=crop&q=80&w=600",
+      description: "Combines premium high-tensile pocket coil assemblies with cooling organic gel caps to ensure bounce without heat retention."
+    }
   ];
 
-  const categories = ['All', 'Orthopedic', 'Memory Foam', 'Hybrid Spring', 'Latex', 'Coir'];
+  // Subscribe to live Firestore product database collection updates[cite: 1]
+  useEffect(() => {
+    const q = query(collection(db, 'products'), orderBy('createdAt', 'desc'));
 
-  const filteredProducts = filter === 'All' ? products : products.filter(p => p.type.includes(filter) || filter.includes(p.type));
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const liveItems: MattressProduct[] = [];
+      snapshot.forEach((doc) => {
+        const data = doc.data();
+        liveItems.push({
+          id: doc.id,
+          name: data.name,
+          price: Number(data.price),
+          tagline: data.tagline,
+          image: data.image,
+          description: data.description
+        });
+      });
+
+      setDbProducts(liveItems);
+      setLoading(false);
+    }, (error) => {
+      console.error("Firestore database product retrieval issue:", error);
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  const displayProducts = dbProducts.length > 0 ? dbProducts : fallbackProducts;
 
   return (
     <div className="bg-brand-cream min-h-screen pt-32 pb-24">
       <div className="container mx-auto px-6 lg:px-12">
-        <div className="text-center max-w-3xl mx-auto mb-16">
-          <h1 className="text-4xl md:text-5xl font-serif mb-6">Our Collection</h1>
-          <p className="text-gray-600 leading-relaxed text-lg">
-            Experience the pinnacle of sleep luxury. Each mattress is meticulously crafted to provide the perfect balance of support, cooling, and plush comfort.
+
+        {/* Page Header[cite: 1] */}
+        <div className="text-center max-w-2xl mx-auto mb-20">
+          <span className="text-brand-gold font-medium uppercase tracking-widest text-sm mb-4 block">The Collection</span>
+          <h1 className="text-4xl md:text-5xl font-serif mb-6">Premium Mattress Ecosystem</h1>
+          <p className="text-gray-600 text-lg font-light">
+            Meticulously engineered luxury comfort models built for restful sleep. Explore premium mattress designs available at our Berhampur showroom.
           </p>
         </div>
 
-        {/* Filters */}
-        <div className="flex flex-col md:flex-row justify-between items-center mb-12 gap-6">
-          <div className="flex overflow-x-auto w-full md:w-auto space-x-2 pb-2 md:pb-0 hide-scrollbar">
-            {categories.map(cat => (
-              <button
-                key={cat}
-                onClick={() => setFilter(cat)}
-                className={`px-6 py-2.5 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
-                  filter === cat ? 'bg-brand-dark text-white' : 'bg-white text-gray-600 hover:bg-gray-100'
-                }`}
+        {/* Loading Indicator[cite: 1] */}
+        {loading ? (
+          <div className="flex justify-center items-center py-24">
+            <Loader2 className="w-8 h-8 animate-spin text-brand-gold" />
+          </div>
+        ) : (
+          /* Products Grid Layout - 👈 Changed from lg:grid-cols-3 to lg:grid-cols-4 for tighter sizing */
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {displayProducts.map((prod, i) => (
+              <motion.div
+                key={prod.id || i}
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: i * 0.08 }}
+                // 👈 Changed border radius slightly to rounded-2xl to match smaller aesthetic profile
+                className="bg-white rounded-2xl overflow-hidden lux-shadow border border-gray-100 flex flex-col group justify-between"
               >
-                {cat}
-              </button>
+                {/* Image Section[cite: 1] */}
+                {/* 👈 Changed aspect ratio from aspect-[4/3] to aspect-video to shrink vertical image footprint */}
+                <div className="relative overflow-hidden aspect-video bg-gray-100 shrink-0">
+                  <img
+                    src={prod.image}
+                    alt={prod.name}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+                  />
+                  <div className="absolute top-3 right-3 bg-brand-dark/80 backdrop-blur-md px-3 py-1 rounded-full text-brand-gold text-[11px] font-semibold uppercase tracking-wider">
+                     ₹{prod.price.toLocaleString('en-IN')}
+                  </div>
+                </div>
+
+                {/* Info Text Blocks[cite: 1] */}
+                {/* 👈 Decreased layout internal padding from p-8 to p-5 */}
+                <div className="p-5 flex-grow flex flex-col justify-between">
+                  <div>
+                    {/* 👈 Reduced typography heading styles from text-2xl to text-xl */}
+                    <h3 className="text-xl font-serif text-brand-dark mb-1 group-hover:text-brand-gold transition-colors">{prod.name}</h3>
+                    <p className="text-[10px] text-brand-gold font-medium tracking-wide mb-3 uppercase truncate">{prod.tagline}</p>
+                    {/* 👈 Adjusted text scale down to text-xs to match smaller width bounds smoothly */}
+                    <p className="text-gray-500 font-light text-xs leading-relaxed mb-4 line-clamp-4">
+                      {prod.description}
+                    </p>
+                  </div>
+
+                  {/* Showroom Call-To-Action Hooks[cite: 1] */}
+                  <div className="border-t border-gray-50 pt-4 mt-auto flex items-center justify-between">
+                    <span className="text-[10px] text-gray-400 uppercase tracking-widest font-medium">Available</span>
+                    <a
+                      href={`https://wa.me/91XXXXXXXXXX?text=Hi%20Royale%20Sleepy,%20I'm%20interested%20in%20the%20${encodeURIComponent(prod.name)}%20mattress%20model.`}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider text-brand-dark hover:text-brand-gold transition-colors"
+                    >
+                      <span>Inquire</span>
+                      <ArrowRight className="w-3 h-3" />
+                    </a>
+                  </div>
+                </div>
+              </motion.div>
             ))}
           </div>
-          
-          <div className="relative w-full md:w-64">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-            <input 
-              type="text" 
-              placeholder="Search mattresses..."
-              className="w-full bg-white border border-gray-100 rounded-full pl-10 pr-4 py-2.5 text-sm outline-none focus:border-brand-gold transition-colors"
-            />
+        )}
+
+        {/* Brand Value Props Footer Banner[cite: 1] */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-24 border-t border-gray-200/60 pt-16 text-center md:text-left">
+          <div className="flex flex-col items-center md:items-start max-w-sm">
+            <Shield className="w-8 h-8 text-brand-gold mb-4" />
+            <h4 className="font-serif font-medium text-lg mb-1 text-brand-dark">10 Year Warranty</h4>
+            <p className="text-sm text-gray-500 font-light leading-relaxed">Rest assured knowing every dynamic product layer core is backed by institutional replacement coverage warranties.</p>
+          </div>
+          <div className="flex flex-col items-center md:items-start max-w-sm">
+            <Sparkles className="w-8 h-8 text-brand-gold mb-4" />
+            <h4 className="font-serif font-medium text-lg mb-1 text-brand-dark">100% Organic Fabrics</h4>
+            <p className="text-sm text-gray-500 font-light leading-relaxed">We skin-wrap our mattresses in pure bamboo fabrics or eco-certified anti-dustmite yarn layouts.</p>
+          </div>
+          <div className="flex flex-col items-center md:items-start max-w-sm">
+            <RefreshCw className="w-8 h-8 text-brand-gold mb-4" />
+            <h4 className="font-serif font-medium text-lg mb-1 text-brand-dark">Free Doorstep Delivery</h4>
+            <p className="text-sm text-gray-500 font-light leading-relaxed">Direct transit distribution vehicles roll straight to your house anywhere in Berhampur at no extra charge.</p>
           </div>
         </div>
 
-        {/* Product Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {filteredProducts.map((product, i) => (
-            <motion.div 
-              key={product.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.1, duration: 0.5 }}
-              className="bg-white rounded-2xl overflow-hidden lux-shadow group"
-            >
-              <div className="relative h-72 overflow-hidden">
-                <img src={product.img} alt={product.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
-                <div className="absolute top-4 left-4 bg-white/90 backdrop-blur text-xs font-medium px-3 py-1 rounded-full text-brand-dark">
-                  {product.type}
-                </div>
-              </div>
-              <div className="p-6">
-                <h3 className="text-xl font-serif font-semibold mb-2">{product.name}</h3>
-                <p className="text-sm text-gray-500 mb-4 line-clamp-2">Elevate your sleep with our premium quality fabric and advanced support system.</p>
-                <div className="flex justify-between items-center mb-6">
-                  <span className="text-lg font-semibold">{product.price}</span>
-                  <div className="text-xs space-x-1">
-                    <span className="bg-gray-100 px-2 py-1 rounded text-gray-600">King</span>
-                    <span className="bg-gray-100 px-2 py-1 rounded text-gray-600">Queen</span>
-                  </div>
-                </div>
-                
-                <div className="flex gap-3">
-                  <button className="flex-1 bg-brand-dark text-white py-3 rounded-full text-sm font-medium hover:bg-gray-800 transition-colors">
-                    View Details
-                  </button>
-                  <a 
-                    href={`https://wa.me/919999999999?text=Hi,%20I'm%20interested%20in%20${product.name}`}
-                    className="w-12 h-12 bg-green-50 text-green-600 flex items-center justify-center rounded-full hover:bg-green-100 transition-colors shrink-0"
-                    title="Ask on WhatsApp"
-                  >
-                    <MessageCircle className="w-5 h-5" />
-                  </a>
-                </div>
-              </div>
-            </motion.div>
-          ))}
-        </div>
       </div>
     </div>
   );

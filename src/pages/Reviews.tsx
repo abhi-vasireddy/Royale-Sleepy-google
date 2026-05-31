@@ -1,9 +1,23 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Star, Quote } from 'lucide-react';
+import { Star, Quote, Loader2 } from 'lucide-react';
+import { db } from '../lib/firebase';
+import { collection, onSnapshot, query, orderBy } from 'firebase/firestore';
+
+interface ReviewItem {
+  id?: string;
+  name: string;
+  location?: string;
+  text: string;
+  rating: number;
+}
 
 export default function Reviews() {
-  const reviews = [
+  const [dbReviews, setDbReviews] = useState<ReviewItem[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  // Fallback initial reviews to display if the database doesn't have entries yet
+  const fallbackReviews: ReviewItem[] = [
     {
       name: "Aarav Patnaik",
       location: "Berhampur",
@@ -42,6 +56,36 @@ export default function Reviews() {
     }
   ];
 
+  // Subscribe to real-time reviews collection updates from Firestore
+  useEffect(() => {
+    const q = query(collection(db, 'reviews'), orderBy('createdAt', 'desc'));
+
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const liveReviews: ReviewItem[] = [];
+      snapshot.forEach((doc) => {
+        const data = doc.data();
+        liveReviews.push({
+          id: doc.id,
+          name: data.name,
+          location: data.location || "Verified Buyer", // Uses fallback label if location isn't provided via admin
+          text: data.text,
+          rating: data.rating,
+        });
+      });
+
+      setDbReviews(liveReviews);
+      setLoading(false);
+    }, (error) => {
+      console.error("Failed to fetch database reviews: ", error);
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  // Combine database values with placeholder elements if real-time state is blank
+  const displayReviews = dbReviews.length > 0 ? dbReviews : fallbackReviews;
+
   return (
     <div className="bg-brand-cream min-h-screen pt-32 pb-24">
       <div className="container mx-auto px-6 lg:px-12">
@@ -53,39 +97,50 @@ export default function Reviews() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {reviews.map((review, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: i * 0.1 }}
-              className="bg-white p-8 rounded-2xl lux-shadow relative"
-            >
-              <Quote className="absolute top-8 right-8 w-8 h-8 text-brand-beige/50" />
-              <div className="flex gap-1 mb-6">
-                {[...Array(review.rating)].map((_, idx) => (
-                  <Star key={idx} className="w-4 h-4 fill-brand-gold text-brand-gold" />
-                ))}
-                {[...Array(5 - review.rating)].map((_, idx) => (
-                  <Star key={idx} className="w-4 h-4 text-gray-200" />
-                ))}
-              </div>
-              <p className="text-gray-700 leading-relaxed italic mb-8 font-light text-sm">
-                "{review.text}"
-              </p>
-              <div className="flex items-center gap-4">
-                <div className="w-10 h-10 rounded-full bg-brand-beige flex items-center justify-center text-brand-gold-dark font-serif font-bold">
-                  {review.name.charAt(0)}
-                </div>
+        {loading ? (
+          <div className="flex justify-center items-center py-20">
+            <Loader2 className="w-8 h-8 animate-spin text-brand-gold" />
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {displayReviews.map((review, i) => (
+              <motion.div
+                key={review.id || i}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: Math.min(i * 0.05, 0.4) }}
+                className="bg-white p-8 rounded-2xl lux-shadow relative flex flex-col justify-between"
+              >
+                <Quote className="absolute top-8 right-8 w-8 h-8 text-brand-beige/50" />
+
                 <div>
-                  <h4 className="font-semibold text-brand-dark text-sm">{review.name}</h4>
-                  <p className="text-xs text-gray-500">{review.location}</p>
+                  <div className="flex gap-1 mb-6">
+                    {[...Array(5)].map((_, idx) => (
+                      <Star
+                        key={idx}
+                        className={`w-4 h-4 ${idx < review.rating ? 'fill-brand-gold text-brand-gold' : 'text-gray-200'}`}
+                      />
+                    ))}
+                  </div>
+
+                  <p className="text-gray-700 leading-relaxed italic mb-8 font-light text-sm">
+                    "{review.text}"
+                  </p>
                 </div>
-              </div>
-            </motion.div>
-          ))}
-        </div>
+
+                <div className="flex items-center gap-4 mt-auto">
+                  <div className="w-10 h-10 rounded-full bg-brand-beige flex items-center justify-center text-brand-gold-dark font-serif font-bold shrink-0">
+                    {review.name ? review.name.charAt(0).toUpperCase() : 'U'}
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-brand-dark text-sm">{review.name}</h4>
+                    <p className="text-xs text-gray-500">{review.location}</p>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

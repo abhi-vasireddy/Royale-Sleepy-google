@@ -1,10 +1,10 @@
 {
-  "projectId": "molten-pivot-gpnh2",
-  "appId": "1:503696828341:web:dce5bfad3dae0944b11bfc",
-  "apiKey": "AIzaSyA_t3SS8mvnyYhhClxGl8_Qb4e4BqWOR8I",
-  "authDomain": "molten-pivot-gpnh2.firebaseapp.com",
-  "firestoreDatabaseId": "ai-studio-017ae58d-da95-454c-aa03-f627a711579c",
-  "storageBucket": "molten-pivot-gpnh2.firebasestorage.app",
-  "messagingSenderId": "503696828341",
-  "measurementId": ""
+  "projectId": "royale-sleepy",
+  "appId": "1:481053304405:web:c1e0e9972e1b7c45bf16dc",
+  "apiKey": "AIzaSyADgoOwyf4IndOkFIAOJmSIU_IjHs4QAWg",
+  "authDomain": "royale-sleepy.firebaseapp.com",
+  "firestoreDatabaseId": "",
+  "storageBucket": "royale-sleepy.firebasestorage.app",
+  "messagingSenderId": "481053304405",
+  "measurementId": "G-9Y1ESK362N"
 }
