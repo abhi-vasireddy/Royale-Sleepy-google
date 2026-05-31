@@ -1,0 +1,6 @@
+{
+  "name": "Royale Sleepy",
+  "description": "Premium luxury mattress showroom website for Royale Sleepy.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
