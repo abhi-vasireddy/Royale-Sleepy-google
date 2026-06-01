@@ -39,7 +39,7 @@ export default function Footer() {
           <ul className="space-y-4 text-sm text-gray-400">
             <li className="flex gap-3">
               <MapPin className="w-5 h-5 text-brand-gold shrink-0" />
-              <span>Deamy Soft Showroom, <br/>Berhampur, Odisha, India</span>
+              <span>Deamy Soft Showroom, <br/>Bhubaneswar, Odisha, India</span>
             </li>
             <li className="flex gap-3 items-center">
               <Phone className="w-5 h-5 text-brand-gold shrink-0" />
