@@ -8,7 +8,7 @@ export default function Footer() {
       <div className="container mx-auto px-6 lg:px-12 grid grid-cols-1 md:grid-cols-4 gap-12 border-b border-gray-800 pb-12">
         <div className="col-span-1 md:col-span-1">
           <Link to="/" className="text-2xl font-serif font-bold tracking-tight mb-6 block">
-            Royale Sleepy
+            Deamy Soft
           </Link>
           <p className="text-gray-400 text-sm leading-relaxed mb-6">
             Premium mattresses designed for ultimate comfort. Elevating the sleep experience in Berhampur with luxury materials and orthopedic support.
@@ -48,7 +48,7 @@ export default function Footer() {
           <ul className="space-y-4 text-sm text-gray-400">
             <li className="flex gap-3">
               <MapPin className="w-5 h-5 text-brand-gold shrink-0" />
-              <span>Royale Sleepy Showroom, <br/>Berhampur, Odisha, India</span>
+              <span>Deamy Soft Showroom, <br/>Berhampur, Odisha, India</span>
             </li>
             <li className="flex gap-3 items-center">
               <Phone className="w-5 h-5 text-brand-gold shrink-0" />
@@ -62,7 +62,7 @@ export default function Footer() {
         </div>
       </div>
       <div className="container mx-auto px-6 lg:px-12 mt-8 flex flex-col md:flex-row justify-between items-center text-xs text-gray-500">
-        <p>&copy; {new Date().getFullYear()} Royale Sleepy. All rights reserved.</p>
+        <p>&copy; {new Date().getFullYear()} Deamy Soft. All rights reserved.</p>
         <p className="mt-2 md:mt-0">Designed for luxury.</p>
       </div>
     </footer>

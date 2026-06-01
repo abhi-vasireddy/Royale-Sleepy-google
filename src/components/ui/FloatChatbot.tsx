@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 export default function FloatChatbot() {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<{ role: 'user' | 'model'; text: string }[]>([
-    { role: 'model', text: 'Welcome to Royale Sleepy. How can I help you find the perfect mattress today?' }
+    { role: 'model', text: 'Welcome to Deamy Soft. How can I help you find the perfect mattress today?' }
   ]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);

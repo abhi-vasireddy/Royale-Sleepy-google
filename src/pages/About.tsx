@@ -20,7 +20,7 @@ export default function About() {
             </div>
             
             <p className="text-gray-600 leading-relaxed text-lg font-light">
-              Founded in Berhampur, Odisha, Royale Sleepy was born from a simple yet powerful ideal: that a luxurious, restorative sleep is the foundation of a life well-lived. 
+              Founded in Berhampur, Odisha, Deamy Soft was born from a simple yet powerful ideal: that a luxurious, restorative sleep is the foundation of a life well-lived.
             </p>
             
             <p className="text-gray-600 leading-relaxed font-light">

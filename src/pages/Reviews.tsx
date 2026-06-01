@@ -21,7 +21,7 @@ export default function Reviews() {
     {
       name: "Aarav Patnaik",
       location: "Berhampur",
-      text: "The Cloud Memory mattress changed my life. I used to wake up with back pain every morning, but since switching to Royale Sleepy, I feel completely rested.",
+      text: "The Cloud Memory mattress changed my life. I used to wake up with back pain every morning, but since switching to Deamy Soft, I feel completely rested.",
       rating: 5,
     },
     {
@@ -93,7 +93,7 @@ export default function Reviews() {
           <span className="text-brand-gold font-medium uppercase tracking-widest text-sm mb-4 block">Testimonials</span>
           <h1 className="text-4xl md:text-5xl font-serif mb-6">Words from Our Sleepers</h1>
           <p className="text-gray-600 text-lg font-light">
-            Don't just take our word for it. Read what our valued customers have to say about their Royale Sleepy experience.
+            Don't just take our word for it. Read what our valued customers have to say about their Deamy Soft experience.
           </p>
         </div>
 
