@@ -52,7 +52,7 @@ export default function Contact() {
                   <h4 className="font-semibold mb-2">Our Location</h4>
                   <p className="text-gray-400 font-light leading-relaxed">
                     123 Luxury Avenue,<br/>
-                    Near City Center, Berhampur,<br/>
+                    Near City Center, Bhubaneswar,<br/>
                     Odisha, India - 760001
                   </p>
                 </div>
