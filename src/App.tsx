@@ -11,6 +11,7 @@ import Contact from './pages/Contact';
 import Admin from './pages/Admin';
 import AdminLogin from './pages/AdminLogin';
 import ProtectedRoute from './components/auth/ProtectedRoute';
+import Pillows from './pages/Pillows';
 
 export default function App() {
   return (
@@ -21,6 +22,7 @@ export default function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/mattresses" element={<Mattresses />} />
+            <Route path="/pillows" element={<Pillows />} />
             <Route path="/about" element={<About />} />
             <Route path="/reviews" element={<Reviews />} />
             <Route path="/contact" element={<Contact />} />

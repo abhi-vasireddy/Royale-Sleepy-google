@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { db } from '../lib/firebase';
-import { collection, onSnapshot, query, orderBy, where } from 'firebase/firestore'; // 👈 Added 'where' import
-import { Star, ArrowRight, Loader2, Shield, Sparkles, RefreshCw } from 'lucide-react';
+import { collection, onSnapshot, query, orderBy, where } from 'firebase/firestore';
+import { ArrowRight, Loader2, Shield, Sparkles, RefreshCw } from 'lucide-react';
 
-interface MattressProduct {
+interface PillowProduct {
   id?: string;
   name: string;
   price: number;
@@ -13,46 +13,38 @@ interface MattressProduct {
   description: string;
 }
 
-export default function Mattresses() {
-  const [dbProducts, setDbProducts] = useState<MattressProduct[]>([]);
+export default function Pillows() {
+  const [dbProducts, setDbProducts] = useState<PillowProduct[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Fallback initial products to display if your Firestore database collection is empty
-  const fallbackProducts: MattressProduct[] = [
+  // Fallback initial products to display if your Firestore pillows collection is empty
+  const fallbackPillows: PillowProduct[] = [
     {
-      name: "The Cloud Memory",
-      price: 12999,
-      tagline: "Ultra plush temperature regulating luxurious foam layers.",
+      name: "Sovereign Gel Pillow",
+      price: 1999,
+      tagline: "Cooling Tech Alignment",
+      image: "https://images.unsplash.com/photo-1584100936595-c0654b55a2e2?auto=format&fit=crop&q=80&w=600",
+      description: "Infused with thermal fluid micro-beads designed to target cervical alignment contours effortlessly without holding onto head heat."
+    },
+    {
+      name: "Cloud Comfort Memory Pillow",
+      price: 2499,
+      tagline: "Zero-Gravity Neck Support",
       image: "https://images.unsplash.com/photo-1631049307264-da0ec9d70304?auto=format&fit=crop&q=80&w=600",
-      description: "Infused with responsive zero-gravity memory configurations designed to contour organically around stress centers while minimizing motion transfer."
-    },
-    {
-      name: "Royale Ortho Care",
-      price: 15499,
-      tagline: "Chiropractor endorsed 5-zone spinal alignment support matrix.",
-      image: "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&q=80&w=600",
-      description: "Engineered specifically for persistent back discomfort using high-density rebonded support systems that counter pressure dynamically."
-    },
-    {
-      name: "Luxury Spring Hybrid",
-      price: 18999,
-      tagline: "Individually pocketed steel springs with pocket-mesh breathable profiles.",
-      image: "https://images.unsplash.com/photo-1540518614846-7eded433c457?auto=format&fit=crop&q=80&w=600",
-      description: "Combines premium high-tensile pocket coil assemblies with cooling organic gel caps to ensure bounce without heat retention."
+      description: "Premium high-density memory foam engineered to cradle the head and release upper spine pressure for side and back sleepers."
     }
   ];
 
-  // Subscribe to live Firestore product database collection updates
   useEffect(() => {
-    // 👈 FIXED: Added where('type', '==', 'mattress') to thoroughly exclude pillows from this route query
+    // Queries only products where the category type is explicitly marked 'pillow'
     const q = query(
       collection(db, 'products'),
-      where('type', '==', 'mattress'),
+      where('type', '==', 'pillow'),
       orderBy('createdAt', 'desc')
     );
 
     const unsubscribe = onSnapshot(q, (snapshot) => {
-      const liveItems: MattressProduct[] = [];
+      const liveItems: PillowProduct[] = [];
       snapshot.forEach((doc) => {
         const data = doc.data();
         liveItems.push({
@@ -68,14 +60,14 @@ export default function Mattresses() {
       setDbProducts(liveItems);
       setLoading(false);
     }, (error) => {
-      console.error("Firestore database product retrieval issue:", error);
+      console.error("Firestore pillow lookup failure:", error);
       setLoading(false);
     });
 
     return () => unsubscribe();
   }, []);
 
-  const displayProducts = dbProducts.length > 0 ? dbProducts : fallbackProducts;
+  const displayProducts = dbProducts.length > 0 ? dbProducts : fallbackPillows;
 
   return (
     <div className="bg-brand-cream min-h-screen pt-32 pb-24">
@@ -83,20 +75,20 @@ export default function Mattresses() {
 
         {/* Page Header */}
         <div className="text-center max-w-2xl mx-auto mb-20">
-          <span className="text-brand-gold font-medium uppercase tracking-widest text-sm mb-4 block">The Collection</span>
-          <h1 className="text-4xl md:text-5xl font-serif mb-6">Premium Mattress Ecosystem</h1>
+          <span className="text-brand-gold font-medium uppercase tracking-widest text-sm mb-4 block">The Essentials</span>
+          <h1 className="text-4xl md:text-5xl font-serif mb-6">Luxury Pillow Collection</h1>
           <p className="text-gray-600 text-lg font-light">
-            Meticulously engineered luxury comfort models built for restful sleep. Explore premium mattress designs available at our Berhampur showroom.
+            Plush, breathable contours constructed with premium memory modules to perfectly cradle your head and neck.
           </p>
         </div>
 
-        {/* Loading Indicator */}
+        {/* Loading State */}
         {loading ? (
           <div className="flex justify-center items-center py-24">
             <Loader2 className="w-8 h-8 animate-spin text-brand-gold" />
           </div>
         ) : (
-          /* Products Grid Layout */
+          /* Products 4-Column Compact Grid */
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {displayProducts.map((prod, i) => (
               <motion.div
@@ -106,7 +98,7 @@ export default function Mattresses() {
                 transition={{ duration: 0.6, delay: i * 0.08 }}
                 className="bg-white rounded-2xl overflow-hidden lux-shadow border border-gray-100 flex flex-col group justify-between"
               >
-                {/* Image Section */}
+                {/* Image Aspect Box */}
                 <div className="relative overflow-hidden aspect-video bg-gray-100 shrink-0">
                   <img
                     src={prod.image}
@@ -128,11 +120,11 @@ export default function Mattresses() {
                     </p>
                   </div>
 
-                  {/* Showroom Call-To-Action Hooks */}
+                  {/* WhatsApp Hook Call to Action */}
                   <div className="border-t border-gray-50 pt-4 mt-auto flex items-center justify-between">
-                    <span className="text-[10px] text-gray-400 uppercase tracking-widest font-medium">Available</span>
+                    <span className="text-[10px] text-gray-400 uppercase tracking-widest font-medium">In Stock</span>
                     <a
-                      href={`https://wa.me/91XXXXXXXXXX?text=Hi%20Royale%20Sleepy,%20I'm%20interested%20in%20the%20${encodeURIComponent(prod.name)}%20mattress%20model.`}
+                      href={`https://wa.me/919999999999?text=Hi%20Gurudev%20Furniture,%20I'm%20interested%20in%20the%20${encodeURIComponent(prod.name)}%20pillow.`}
                       target="_blank"
                       rel="noreferrer"
                       className="flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider text-brand-dark hover:text-brand-gold transition-colors"
@@ -147,22 +139,22 @@ export default function Mattresses() {
           </div>
         )}
 
-        {/* Brand Value Props Footer Banner */}
+        {/* Trust Value Props Footer Banner */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-24 border-t border-gray-200/60 pt-16 text-center md:text-left">
           <div className="flex flex-col items-center md:items-start max-w-sm">
             <Shield className="w-8 h-8 text-brand-gold mb-4" />
-            <h4 className="font-serif font-medium text-lg mb-1 text-brand-dark">Annual Turnover</h4>
-            <p className="text-sm text-gray-500 font-light leading-relaxed">1.5 - 5 Cr</p>
+            <h4 className="font-serif font-medium text-lg mb-1 text-brand-dark">Premium Quality</h4>
+            <p className="text-sm text-gray-500 font-light leading-relaxed">Rest assured knowing every product uses premium high-density materials engineered to last.</p>
           </div>
           <div className="flex flex-col items-center md:items-start max-w-sm">
             <Sparkles className="w-8 h-8 text-brand-gold mb-4" />
-            <h4 className="font-serif font-medium text-lg mb-1 text-brand-dark">Nature of Business</h4>
-            <p className="text-sm text-gray-500 font-light leading-relaxed">We skin-wrap our mattresses in pure bamboo fabrics or eco-certified anti-dustmite yarn layouts.</p>
+            <h4 className="font-serif font-medium text-lg mb-1 text-brand-dark">100% Breathable Fabrics</h4>
+            <p className="text-sm text-gray-500 font-light leading-relaxed">Wrapped in specialized cooling technology structures keeping you fresh all night long.</p>
           </div>
           <div className="flex flex-col items-center md:items-start max-w-sm">
             <RefreshCw className="w-8 h-8 text-brand-gold mb-4" />
-            <h4 className="font-serif font-medium text-lg mb-1 text-brand-dark">Free Doorstep Delivery</h4>
-            <p className="text-sm text-gray-500 font-light leading-relaxed">Direct transit distribution vehicles roll straight to your house anywhere in Berhampur at no extra charge.</p>
+            <h4 className="font-serif font-medium text-lg mb-1 text-brand-dark">Easy Procurement</h4>
+            <p className="text-sm text-gray-500 font-light leading-relaxed">Instant assistance and logistics coordination directly from our Bhubaneswar showroom hub.</p>
           </div>
         </div>
 

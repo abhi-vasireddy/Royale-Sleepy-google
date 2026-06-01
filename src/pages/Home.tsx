@@ -134,7 +134,7 @@ export default function Home() {
       <section className="py-24 bg-white">
         <div className="container mx-auto px-6 lg:px-12">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-serif mb-4">The Royale Standard</h2>
+            <h2 className="text-3xl md:text-4xl font-serif mb-4">The Gurudev Standard</h2>
             <div className="w-16 h-1 bg-brand-gold mx-auto rounded-full"></div>
           </div>
 

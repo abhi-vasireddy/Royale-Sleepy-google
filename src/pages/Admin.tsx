@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { db } from '../lib/firebase';
 import { collection, onSnapshot, query, orderBy, addDoc, deleteDoc, doc, serverTimestamp } from 'firebase/firestore';
-import { LogOut, LayoutDashboard, Database, MessageSquare, Users, Image as ImageIcon, Plus, Loader2, Trash2, IndianRupee } from 'lucide-react';
+import { LogOut, LayoutDashboard, Database, MessageSquare, Users, Image as ImageIcon, Plus, Loader2, Trash2, IndianRupee, Layers } from 'lucide-react';
 
 export default function Admin() {
   const [activeTab, setActiveTab] = useState('leads');
@@ -21,6 +21,7 @@ export default function Admin() {
   const [prodName, setProdName] = useState('');
   const [prodPrice, setProdPrice] = useState('');
   const [prodTagline, setProdTagline] = useState('');
+  const [prodType, setProdType] = useState('mattress'); // Category selection state defaulting to mattress
   const [prodImage, setProdImage] = useState('');
   const [prodDesc, setProdDesc] = useState('');
   const [isSubmittingProduct, setIsSubmittingProduct] = useState(false);
@@ -95,6 +96,7 @@ export default function Admin() {
         name: prodName.trim(),
         price: Number(prodPrice),
         tagline: prodTagline.trim() || 'Luxury Comfort Guaranteed',
+        type: prodType, // Commits category type ('mattress' or 'pillow') dynamically to Firestore
         image: prodImage.trim(),
         description: prodDesc.trim(),
         createdAt: serverTimestamp(),
@@ -103,9 +105,10 @@ export default function Admin() {
       setProdName('');
       setProdPrice('');
       setProdTagline('');
+      setProdType('mattress'); // Resets selection back to default
       setProdImage('');
       setProdDesc('');
-      alert('New mattress profile written to cloud collections successfully!');
+      alert('New item profile written to cloud collections successfully!');
     } catch (error) {
       console.error("Firestore Product Creation Failure:", error);
       alert('Failed to publish product model structure.');
@@ -116,7 +119,7 @@ export default function Admin() {
 
   // Delete a product row helper
   const handleDeleteProduct = async (id: string) => {
-    if (!confirm('Are you sure you want to remove this mattress model?')) return;
+    if (!confirm('Are you sure you want to remove this catalog model?')) return;
     try {
       await deleteDoc(doc(db, 'products', id));
     } catch (err) {
@@ -253,12 +256,30 @@ export default function Admin() {
             <div className="bg-white rounded-2xl p-6 lux-shadow border border-gray-100 lg:col-span-1">
               <h3 className="text-lg font-serif font-medium text-brand-dark mb-4 flex items-center gap-2">
                 <Plus className="w-5 h-5 text-brand-gold" />
-                Add Mattress Model
+                Add Collection Item
               </h3>
 
               <form onSubmit={handleCreateProduct} className="space-y-4">
+                {/* Category Selector Dropdown Input */}
                 <div>
-                  <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Mattress Name</label>
+                  <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Product Category</label>
+                  <div className="relative">
+                    <select
+                      value={prodType}
+                      onChange={(e) => setProdType(e.target.value)}
+                      className="w-full appearance-none px-4 py-2 rounded-xl border border-gray-200 text-sm outline-none bg-white focus:border-brand-gold transition-colors cursor-pointer"
+                    >
+                      <option value="mattress">Mattress 🛏️</option>
+                      <option value="pillow">Pillow ☁️</option>
+                    </select>
+                    <div className="absolute inset-y-0 right-4 flex items-center pointer-events-none text-gray-400">
+                      <Layers className="w-4 h-4 text-brand-gold" />
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Product Name</label>
                   <input
                     type="text"
                     value={prodName}
@@ -306,7 +327,7 @@ export default function Admin() {
                   <textarea
                     value={prodDesc}
                     onChange={(e) => setProdDesc(e.target.value)}
-                    placeholder="Highlight mattress core details, comfort layer counts, edge-support wiring layouts..."
+                    placeholder="Highlight core materials, layer configurations, and structural layouts..."
                     rows={4}
                     className="w-full px-4 py-2 rounded-xl border border-gray-200 text-sm outline-none focus:border-brand-gold transition-colors resize-none"
                   />
@@ -343,7 +364,13 @@ export default function Admin() {
                     <div key={prod.id} className="p-4 flex items-center gap-4 hover:bg-gray-50/50 transition-colors">
                       <img src={prod.image} alt={prod.name} className="w-16 h-16 rounded-xl object-cover border shrink-0" />
                       <div className="flex-1 min-w-0">
-                        <h4 className="font-semibold text-sm text-brand-dark truncate">{prod.name}</h4>
+                        <div className="flex items-center gap-2">
+                          <h4 className="font-semibold text-sm text-brand-dark truncate">{prod.name}</h4>
+                          {/* Categorization Badge */}
+                          <span className={`text-[9px] px-2 py-0.5 rounded-full uppercase font-bold tracking-wider ${prod.type === 'pillow' ? 'bg-blue-50 text-blue-600 border border-blue-100' : 'bg-brand-cream text-brand-gold-dark border border-brand-gold/20'}`}>
+                            {prod.type || 'mattress'}
+                          </span>
+                        </div>
                         <p className="text-xs text-brand-gold font-medium flex items-center gap-0.5 mt-0.5">
                           <IndianRupee className="w-3 h-3" />
                           {prod.price.toLocaleString('en-IN')} onwards
