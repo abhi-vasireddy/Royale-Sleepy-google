@@ -151,12 +151,12 @@ export default function Mattresses() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-24 border-t border-gray-200/60 pt-16 text-center md:text-left">
           <div className="flex flex-col items-center md:items-start max-w-sm">
             <Shield className="w-8 h-8 text-brand-gold mb-4" />
-            <h4 className="font-serif font-medium text-lg mb-1 text-brand-dark">10 Year Warranty</h4>
-            <p className="text-sm text-gray-500 font-light leading-relaxed">Rest assured knowing every dynamic product layer core is backed by institutional replacement coverage warranties.</p>
+            <h4 className="font-serif font-medium text-lg mb-1 text-brand-dark">Annual Turnover</h4>
+            <p className="text-sm text-gray-500 font-light leading-relaxed">1.5 - 5 Cr</p>
           </div>
           <div className="flex flex-col items-center md:items-start max-w-sm">
             <Sparkles className="w-8 h-8 text-brand-gold mb-4" />
-            <h4 className="font-serif font-medium text-lg mb-1 text-brand-dark">100% Organic Fabrics</h4>
+            <h4 className="font-serif font-medium text-lg mb-1 text-brand-dark">Nature of Business</h4>
             <p className="text-sm text-gray-500 font-light leading-relaxed">We skin-wrap our mattresses in pure bamboo fabrics or eco-certified anti-dustmite yarn layouts.</p>
           </div>
           <div className="flex flex-col items-center md:items-start max-w-sm">
