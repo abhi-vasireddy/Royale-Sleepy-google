@@ -7,6 +7,7 @@ import { db } from '../lib/firebase';
 export default function Contact() {
   const [formData, setFormData] = useState({ name: '', phone: '', message: '' });
   const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
+  const googleMapsUrl = "https://maps.app.goo.gl/FVhiW8tU1RpCmvHr6";
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -29,7 +30,7 @@ export default function Contact() {
     <div className="bg-brand-cream min-h-screen pt-32 pb-24">
       <div className="container mx-auto px-6 lg:px-12">
         <div className="text-center max-w-2xl mx-auto mb-16">
-          <h1 className="text-4xl md:text-5xl font-serif mb-6">Visit Our Showroom</h1>
+          <h1 className="text-4xl md:text-5xl font-serif mb-6">Visit Our Store</h1>
           <p className="text-gray-600 text-lg font-light">
             Experience the Deamy Soft comfort in person, or get in touch with our sleep experts online.
           </p>
@@ -46,16 +47,24 @@ export default function Contact() {
             <h3 className="font-serif text-3xl mb-8">Contact Information</h3>
             
             <div className="space-y-8">
-              <div className="flex gap-4">
-                <MapPin className="w-6 h-6 text-brand-gold shrink-0 mt-1" />
-                <div>
-                  <h4 className="font-semibold mb-2">Our Location</h4>
-                  <p className="text-gray-400 font-light leading-relaxed">
-                    123 Luxury Avenue,<br/>
-                    Near City Center, Bhubaneswar,<br/>
-                    Odisha, India - 760001
-                  </p>
-                </div>
+              {/* Wrapped the location box inside an external target redirect link layout */}
+              <div>
+                <a
+                  href={googleMapsUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex gap-4 group hover:text-brand-gold transition-colors text-left"
+                >
+                  <MapPin className="w-6 h-6 text-brand-gold shrink-0 mt-1 group-hover:scale-105 transition-transform" />
+                  <div>
+                    <h4 className="font-semibold mb-2 text-white">Our Location</h4>
+                    <p className="text-gray-400 font-light leading-relaxed group-hover:text-brand-gold/80 transition-colors">
+                      123 Luxury Avenue,<br/>
+                      Near City Center, Bhubaneswar,<br/>
+                      Odisha, India - 760001
+                    </p>
+                  </div>
+                </a>
               </div>
 
               <div className="flex gap-4">
@@ -65,19 +74,11 @@ export default function Contact() {
                   <p className="text-gray-400 font-light">+91 99999 99999</p>
                 </div>
               </div>
-
-              <div className="flex gap-4">
-                <Clock className="w-6 h-6 text-brand-gold shrink-0 mt-1" />
-                <div>
-                  <h4 className="font-semibold mb-2">Store Hours</h4>
-                  <p className="text-gray-400 font-light">Mon - Sun: 10:00 AM - 9:00 PM</p>
-                </div>
-              </div>
             </div>
 
             <div className="mt-12 pt-10 border-t border-gray-800">
               <p className="text-sm text-gray-400 mb-6 font-light">For immediate assistance, reach out to us on WhatsApp.</p>
-              <a 
+              <a
                 href="https://wa.me/919999999999?text=Hi,%20I%20have%20an%20inquiry."
                 target="_blank"
                 rel="noreferrer"
@@ -90,7 +91,7 @@ export default function Contact() {
           </motion.div>
 
           {/* Contact Form */}
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, x: 30 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
@@ -98,12 +99,12 @@ export default function Contact() {
           >
             <h3 className="font-serif text-3xl mb-2 text-brand-dark">Send an Inquiry</h3>
             <p className="text-gray-500 mb-8 font-light text-sm">Leave your details and we will callback.</p>
-            
+
             <form onSubmit={handleSubmit} className="space-y-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   required
                   className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 outline-none focus:border-brand-gold transition-colors font-light text-sm"
                   value={formData.name}
@@ -111,11 +112,11 @@ export default function Contact() {
                   placeholder="John Doe"
                 />
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
-                <input 
-                  type="tel" 
+                <input
+                  type="tel"
                   required
                   className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 outline-none focus:border-brand-gold transition-colors font-light text-sm"
                   value={formData.phone}
@@ -126,7 +127,7 @@ export default function Contact() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Message (Optional)</label>
-                <textarea 
+                <textarea
                   rows={4}
                   className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 outline-none focus:border-brand-gold transition-colors font-light text-sm resize-none"
                   value={formData.message}
@@ -135,8 +136,8 @@ export default function Contact() {
                 />
               </div>
 
-              <button 
-                type="submit" 
+              <button
+                type="submit"
                 disabled={status === 'submitting'}
                 className="w-full bg-brand-dark text-white py-4 rounded-xl font-medium hover:bg-gray-800 transition-colors disabled:opacity-70 flex items-center justify-center space-x-2"
               >

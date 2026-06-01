@@ -1,8 +1,11 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { MapPin, Phone, MessageCircle, Instagram, Facebook } from 'lucide-react';
+import { MapPin, Phone, MessageCircle } from 'lucide-react';
 
 export default function Footer() {
+  // Your exact Google Maps location link
+  const googleMapsUrl = "https://maps.app.goo.gl/FVhiW8tU1RpCmvHr6";
+
   return (
     <footer className="bg-brand-dark text-white pt-20 pb-10">
       <div className="container mx-auto px-6 lg:px-12 grid grid-cols-1 md:grid-cols-4 gap-12 border-b border-gray-800 pb-12">
@@ -37,9 +40,17 @@ export default function Footer() {
         <div>
           <h4 className="font-serif text-lg mb-6">Visit Us</h4>
           <ul className="space-y-4 text-sm text-gray-400">
-            <li className="flex gap-3">
-              <MapPin className="w-5 h-5 text-brand-gold shrink-0" />
-              <span>Lakshya Enterprise, <br/>Bhubaneswar, Odisha, India</span>
+            {/* The address link now opens your exact location in a new tab smoothly */}
+            <li>
+              <a
+                href={googleMapsUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex gap-3 hover:text-brand-gold transition-colors group"
+              >
+                <MapPin className="w-5 h-5 text-brand-gold shrink-0 mt-0.5 group-hover:scale-105 transition-transform" />
+                <span>Gurudev furniture, <br/>Bhubaneswar, Odisha, India</span>
+              </a>
             </li>
             <li className="flex gap-3 items-center">
               <Phone className="w-5 h-5 text-brand-gold shrink-0" />
