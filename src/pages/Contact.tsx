@@ -32,7 +32,7 @@ export default function Contact() {
         <div className="text-center max-w-2xl mx-auto mb-16">
           <h1 className="text-4xl md:text-5xl font-serif mb-6">Visit Our Store</h1>
           <p className="text-gray-600 text-lg font-light">
-            Experience the Deamy Soft comfort in person, or get in touch with our sleep experts online.
+            Experience the Gurudev furniture comfort in person, or get in touch with our sleep experts online.
           </p>
         </div>
 

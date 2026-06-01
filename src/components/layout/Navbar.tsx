@@ -36,7 +36,7 @@ export default function Navbar() {
     <header className={navbarClasses}>
       <div className="container mx-auto px-6 lg:px-12 flex justify-between items-center">
         <Link to="/" className="text-2xl font-serif font-bold tracking-tight">
-          <span className={logoColorClass}>Deamy Soft</span>
+          <span className={logoColorClass}>Gurudev furniture</span>
         </Link>
 
         {/* Desktop Nav */}

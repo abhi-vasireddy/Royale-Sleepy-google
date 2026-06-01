@@ -56,7 +56,7 @@ export default function AdminLogin() {
           
           <div className="text-center mb-10">
             <h1 className="text-3xl font-serif text-brand-dark mb-2">Admin Portal</h1>
-            <p className="text-gray-500 font-light text-sm">Sign in to manage Deamy Soft</p>
+            <p className="text-gray-500 font-light text-sm">Sign in to manage Gurudev furniture</p>
           </div>
 
           <AnimatePresence>

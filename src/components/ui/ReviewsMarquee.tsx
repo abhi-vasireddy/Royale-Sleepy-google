@@ -72,7 +72,7 @@ export default function ReviewsMarquee() {
           <span className="text-brand-gold font-medium uppercase tracking-widest text-sm mb-4 block">Testimonials</span>
           <h2 className="text-3xl md:text-5xl font-serif mb-4">What Our Customers Say</h2>
           <p className="text-gray-600 font-light max-w-xl mx-auto">
-            Trusted comfort experiences from happy sleepers. Discover why Deamy Soft is Berhampur's choice for luxury sleep.
+            Trusted comfort experiences from happy sleepers. Discover why Gurudev furniture is Bhubaneswar's choice for luxury sleep.
           </p>
         </motion.div>
       </div>
