@@ -13,14 +13,6 @@ export default function Footer() {
           <p className="text-gray-400 text-sm leading-relaxed mb-6">
             Premium mattresses designed for ultimate comfort. Elevating the sleep experience in Berhampur with luxury materials and orthopedic support.
           </p>
-          <div className="flex space-x-4">
-            <a href="#" className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-brand-gold transition-colors text-white">
-              <Instagram className="w-5 h-5" />
-            </a>
-            <a href="#" className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-brand-gold transition-colors text-white">
-              <Facebook className="w-5 h-5" />
-            </a>
-          </div>
         </div>
 
         <div>
@@ -38,7 +30,6 @@ export default function Footer() {
           <ul className="space-y-4 text-sm text-gray-400">
             <li><Link to="/contact" className="hover:text-brand-gold transition-colors">Contact Us</Link></li>
             <li><a href="#" className="hover:text-brand-gold transition-colors">Warranty Info</a></li>
-            <li><a href="#" className="hover:text-brand-gold transition-colors">Shipping & Returns</a></li>
             <li><a href="#" className="hover:text-brand-gold transition-colors">FAQ</a></li>
           </ul>
         </div>
