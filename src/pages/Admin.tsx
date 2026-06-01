@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { db } from '../lib/firebase';
 import { collection, onSnapshot, query, orderBy, addDoc, deleteDoc, doc, serverTimestamp } from 'firebase/firestore';
-import { LogOut, LayoutDashboard, Database, MessageSquare, Users, Image as ImageIcon, Plus, Loader2, Trash2, IndianRupee, Layers } from 'lucide-react';
+import { LogOut, LayoutDashboard, Database, MessageSquare, Users, Image as ImageIcon, Plus, Loader2, Trash2, IndianRupee, Layers, HelpCircle } from 'lucide-react';
 
 export default function Admin() {
   const [activeTab, setActiveTab] = useState('leads');
@@ -21,10 +21,16 @@ export default function Admin() {
   const [prodName, setProdName] = useState('');
   const [prodPrice, setProdPrice] = useState('');
   const [prodTagline, setProdTagline] = useState('');
-  const [prodType, setProdType] = useState('mattress'); // Category selection state defaulting to mattress
+  const [prodType, setProdType] = useState('mattress');
   const [prodImage, setProdImage] = useState('');
   const [prodDesc, setProdDesc] = useState('');
   const [isSubmittingProduct, setIsSubmittingProduct] = useState(false);
+
+  // FAQ state properties
+  const [faqs, setFaqs] = useState<any[]>([]);
+  const [faqQuestion, setFaqQuestion] = useState('');
+  const [faqAnswer, setFaqAnswer] = useState('');
+  const [isSubmittingFaq, setIsSubmittingFaq] = useState(false);
 
   // Unified real-time listeners dependent on active view pane
   useEffect(() => {
@@ -54,6 +60,17 @@ export default function Admin() {
         const productsData: any[] = [];
         snapshot.forEach((doc) => productsData.push({ id: doc.id, ...doc.data() }));
         setProducts(productsData);
+      });
+      return () => unsub();
+    }
+
+    // Subscribe to live Firestore FAQs collection updates
+    if (activeTab === 'faqs') {
+      const q = query(collection(db, 'faqs'), orderBy('createdAt', 'desc'));
+      const unsub = onSnapshot(q, (snapshot) => {
+        const faqsData: any[] = [];
+        snapshot.forEach((doc) => faqsData.push({ id: doc.id, ...doc.data() }));
+        setFaqs(faqsData);
       });
       return () => unsub();
     }
@@ -96,7 +113,7 @@ export default function Admin() {
         name: prodName.trim(),
         price: Number(prodPrice),
         tagline: prodTagline.trim() || 'Luxury Comfort Guaranteed',
-        type: prodType, // Commits category type ('mattress' or 'pillow') dynamically to Firestore
+        type: prodType,
         image: prodImage.trim(),
         description: prodDesc.trim(),
         createdAt: serverTimestamp(),
@@ -105,7 +122,7 @@ export default function Admin() {
       setProdName('');
       setProdPrice('');
       setProdTagline('');
-      setProdType('mattress'); // Resets selection back to default
+      setProdType('mattress');
       setProdImage('');
       setProdDesc('');
       alert('New item profile written to cloud collections successfully!');
@@ -114,6 +131,33 @@ export default function Admin() {
       alert('Failed to publish product model structure.');
     } finally {
       setIsSubmittingProduct(false);
+    }
+  };
+
+  // Handle FAQ entry creation
+  const handleCreateFaq = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!faqQuestion.trim() || !faqAnswer.trim()) {
+      alert('Please fill out both the question and answer text boxes.');
+      return;
+    }
+
+    setIsSubmittingFaq(true);
+    try {
+      await addDoc(collection(db, 'faqs'), {
+        question: faqQuestion.trim(),
+        answer: faqAnswer.trim(),
+        createdAt: serverTimestamp(),
+      });
+
+      setFaqQuestion('');
+      setFaqAnswer('');
+      alert('New FAQ structural entry written to cloud database successfully!');
+    } catch (error) {
+      console.error("Firestore FAQ Creation Failure:", error);
+      alert('Failed to register and publish the FAQ entry.');
+    } finally {
+      setIsSubmittingFaq(false);
     }
   };
 
@@ -127,6 +171,16 @@ export default function Admin() {
     }
   };
 
+  // Delete an FAQ row helper
+  const handleDeleteFaq = async (id: string) => {
+    if (!confirm('Are you sure you want to delete this FAQ entry permanently?')) return;
+    try {
+      await deleteDoc(doc(db, 'faqs', id));
+    } catch (err) {
+      console.error("FAQ deletion failure:", err);
+    }
+  };
+
   const handleLogout = () => {
     localStorage.removeItem('adminAuth');
     navigate('/admin/login');
@@ -137,6 +191,7 @@ export default function Admin() {
     { id: 'products', icon: Database, label: 'Products' },
     { id: 'reviews', icon: MessageSquare, label: 'Reviews' },
     { id: 'leads', icon: Users, label: 'Leads' },
+    { id: 'faqs', icon: HelpCircle, label: 'FAQs' },
     { id: 'media', icon: ImageIcon, label: 'Media' },
   ];
 
@@ -260,7 +315,6 @@ export default function Admin() {
               </h3>
 
               <form onSubmit={handleCreateProduct} className="space-y-4">
-                {/* Category Selector Dropdown Input */}
                 <div>
                   <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Product Category</label>
                   <div className="relative">
@@ -366,7 +420,6 @@ export default function Admin() {
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">
                           <h4 className="font-semibold text-sm text-brand-dark truncate">{prod.name}</h4>
-                          {/* Categorization Badge */}
                           <span className={`text-[9px] px-2 py-0.5 rounded-full uppercase font-bold tracking-wider ${prod.type === 'pillow' ? 'bg-blue-50 text-blue-600 border border-blue-100' : 'bg-brand-cream text-brand-gold-dark border border-brand-gold/20'}`}>
                             {prod.type || 'mattress'}
                           </span>
@@ -391,8 +444,88 @@ export default function Admin() {
           </div>
         )}
 
+        {/* FAQS MANAGEMENT TAB */}
+        {activeTab === 'faqs' && (
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+            {/* Left Column FAQ Entry Form */}
+            <div className="bg-white rounded-2xl p-6 lux-shadow border border-gray-100 lg:col-span-1">
+              <h3 className="text-lg font-serif font-medium text-brand-dark mb-4 flex items-center gap-2">
+                <Plus className="w-5 h-5 text-brand-gold" />
+                Add New FAQ
+              </h3>
+
+              <form onSubmit={handleCreateFaq} className="space-y-4">
+                <div>
+                  <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Question Text</label>
+                  <input
+                    type="text"
+                    value={faqQuestion}
+                    onChange={(e) => setFaqQuestion(e.target.value)}
+                    placeholder="e.g., Do you offer custom sizes?"
+                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm outline-none focus:border-brand-gold transition-colors"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Answer Summary</label>
+                  <textarea
+                    value={faqAnswer}
+                    onChange={(e) => setFaqAnswer(e.target.value)}
+                    placeholder="Provide a detailed solution summary for visitors..."
+                    rows={5}
+                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm outline-none focus:border-brand-gold transition-colors resize-none"
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={isSubmittingFaq}
+                  className="w-full flex items-center justify-center space-x-2 p-3 bg-brand-dark text-white rounded-xl font-medium text-sm hover:bg-gray-800 transition-colors disabled:opacity-50"
+                >
+                  {isSubmittingFaq ? (
+                    <Loader2 className="w-4 h-4 animate-spin text-brand-gold" />
+                  ) : (
+                    <>
+                      <HelpCircle className="w-4 h-4 text-brand-gold" />
+                      <span>Publish FAQ</span>
+                    </>
+                  )}
+                </button>
+              </form>
+            </div>
+
+            {/* Right Column FAQ List Render */}
+            <div className="bg-white rounded-2xl lux-shadow overflow-hidden lg:col-span-2 border border-gray-100">
+              <div className="p-4 bg-gray-50 border-b font-medium text-gray-700 text-sm font-serif">
+                Showroom Live FAQs ({faqs.length})
+              </div>
+
+              <div className="divide-y divide-gray-100 max-h-[620px] overflow-y-auto">
+                {faqs.length === 0 ? (
+                  <div className="text-center p-12 text-gray-400 text-sm">No FAQs written to database yet. Create a module to populate.</div>
+                ) : (
+                  faqs.map((faq) => (
+                    <div key={faq.id} className="p-5 flex items-start gap-4 hover:bg-gray-50/50 transition-colors">
+                      <div className="flex-1 min-w-0">
+                        <h4 className="font-semibold text-sm text-brand-dark leading-snug">Q: {faq.question}</h4>
+                        <p className="text-xs text-gray-500 font-light mt-2 bg-gray-50 p-3 rounded-xl border border-gray-100 whitespace-pre-wrap">A: {faq.answer}</p>
+                      </div>
+                      <button
+                        onClick={() => handleDeleteFaq(faq.id)}
+                        className="text-gray-400 hover:text-red-500 p-2 rounded-xl hover:bg-gray-100 transition-all shrink-0 mt-1"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* DEFAULT DEMO WRAPPER FOR REMAINING MODULES */}
-        {activeTab !== 'leads' && activeTab !== 'reviews' && activeTab !== 'products' && (
+        {activeTab !== 'leads' && activeTab !== 'reviews' && activeTab !== 'products' && activeTab !== 'faqs' && (
           <div className="bg-white rounded-2xl p-10 lux-shadow text-center flex flex-col items-center justify-center min-h-[400px]">
              <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-6">
                 <LayoutDashboard className="w-8 h-8 text-gray-400" />

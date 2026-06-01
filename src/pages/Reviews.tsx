@@ -90,8 +90,8 @@ export default function Reviews() {
     <div className="bg-brand-cream min-h-screen pt-32 pb-24">
       <div className="container mx-auto px-6 lg:px-12">
         <div className="text-center max-w-2xl mx-auto mb-20">
-          <span className="text-brand-gold font-medium uppercase tracking-widest text-sm mb-4 block">Testimonials</span>
-          <h1 className="text-4xl md:text-5xl font-serif mb-6">Words from Our Sleepers</h1>
+          <span className="text-brand-gold font-medium uppercase tracking-widest text-sm mb-4 block">Check Out</span>
+          <h1 className="text-4xl md:text-5xl font-serif mb-6">Words from Our Customers</h1>
           <p className="text-gray-600 text-lg font-light">
             Don't just take our word for it. Read what our valued customers have to say about their Gurudev furniture experience.
           </p>

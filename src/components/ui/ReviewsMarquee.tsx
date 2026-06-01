@@ -57,8 +57,18 @@ export default function ReviewsMarquee() {
 
   if (reviews.length === 0) return null;
 
-  const row1 = [...reviews, ...reviews, ...reviews];
-  const row2 = [...reviews.slice().reverse(), ...reviews.slice().reverse(), ...reviews.slice().reverse()];
+  // 👈 SPLIT LOGIC: Break the list down the middle so rows contain entirely unique cards
+  const midpoint = Math.ceil(reviews.length / 2);
+  const firstHalf = reviews.slice(0, midpoint);
+  const secondHalf = reviews.slice(midpoint);
+
+  // Fallback adjustment if a tiny live dataset leaves one row looking empty
+  const topRowSource = firstHalf.length > 0 ? firstHalf : reviews;
+  const bottomRowSource = secondHalf.length > 0 ? secondHalf : defaultReviews.slice(3);
+
+  // Duplicate the distinct segments to facilitate a smooth, infinite looping sequence
+  const row1 = [...topRowSource, ...topRowSource, ...topRowSource];
+  const row2 = [...bottomRowSource, ...bottomRowSource, ...bottomRowSource];
 
   return (
     <section className="py-24 bg-brand-cream overflow-hidden">
@@ -82,15 +92,15 @@ export default function ReviewsMarquee() {
         <div className="absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-brand-cream to-transparent z-10 hidden md:block"></div>
         <div className="absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-brand-cream to-transparent z-10 hidden md:block"></div>
 
-        {/* Top Row (Left to Right) */}
+        {/* Top Row (Left to Right) - Handles First Half Dataset */}
         <div className="flex overflow-hidden">
           <motion.div
             className="flex space-x-4 min-w-max"
-            animate={{ x: [0, -880] }} // Adjusted tracking layout offset slightly for tighter loops
+            animate={{ x: [0, -880] }}
             transition={{
               repeat: Infinity,
               ease: "linear",
-              duration: 35 // Speeds up marquee slightly since travel path is narrower
+              duration: 35
             }}
           >
             {row1.map((review, i) => (
@@ -99,7 +109,7 @@ export default function ReviewsMarquee() {
           </motion.div>
         </div>
 
-        {/* Bottom Row (Right to Left) */}
+        {/* Bottom Row (Right to Left) - Handles Second Half Dataset */}
         <div className="flex overflow-hidden" dir="rtl">
           <motion.div
             className="flex space-x-4 min-w-max"
@@ -126,7 +136,6 @@ function ReviewCard({ review }: { review: Review }) {
     <motion.div
       whileHover={{ y: -4 }}
       transition={{ type: "spring", stiffness: 300, damping: 20 }}
-      // 👈 Decreased overall card size dimensions from w-[380px] to w-[320px], padding from p-8 to p-5/p-6
       className="w-[260px] md:w-[320px] bg-white/60 backdrop-blur-md p-5 md:p-6 rounded-[1.5rem] lux-shadow border border-white/80 mx-2 shrink-0 flex flex-col justify-between"
     >
       <div>
